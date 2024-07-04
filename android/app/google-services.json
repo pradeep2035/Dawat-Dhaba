@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "218589097975",
+    "project_id": "dawat-dhaba-b9241",
+    "storage_bucket": "dawat-dhaba-b9241.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:218589097975:android:6fd6fbd57d31134f6ec8f2",
+        "android_client_info": {
+          "package_name": "com.example.dawat_dhaba"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCyWZYYtHispljSiVpH-MU4B55tdRW-_Qc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
