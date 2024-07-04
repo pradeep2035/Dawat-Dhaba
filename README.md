@@ -1,6 +1,6 @@
-# dawat_dhaba
+# Dawat Dhaba
 
-A new Flutter project.
+It's a food ordering application made with flutter and GetX state management.
 
 ## Getting Started
 
