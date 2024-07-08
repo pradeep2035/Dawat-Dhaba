@@ -9,6 +9,9 @@ class MenuDataController extends GetxController {
   var fetchCartItemList = [].obs;
   var isLoading = false.obs;
   var isLoadingCartItem = false.obs;
+  var itemQuantities = <int>[].obs;
+  var itemPrices = <int>[].obs;
+  var totalPrice = 0.0.obs;
 
   fetchSpecialMenu() async {
     try {
@@ -111,17 +114,24 @@ class MenuDataController extends GetxController {
   Future<void> fetchCartItem() async {
     isLoadingCartItem.value = true;
     try {
-      Map<String, dynamic> data = {"Customer_id": SharedPreferencesHelper.getcustomerId()};
-      final response = await dio.get(apiValue.fetchCartItem, queryParameters: data);
+      Map<String, dynamic> data = {
+        "Customer_id": SharedPreferencesHelper.getcustomerId()
+      };
+      final response =
+          await dio.get(apiValue.fetchCartItem, queryParameters: data);
       if (response.statusCode == 200) {
         final data = response.data;
         if (data != null && data["status_code"] == 200) {
           List responseData = data['data'];
+          itemQuantities.value =fetchCartItemList.map((item) => item['quantity'] as int).toList();
+          itemPrices.value =fetchCartItemList.map((item) => item['price'] as int).toList();
+          updateTotalPrice();
           fetchCartItemList.value = responseData;
           print("CART ITEM FETCHED SUCCESSFULLY");
-          print(fetchCartItemList);
         } else {
           fetchCartItemList.clear();
+          itemQuantities.clear();
+          itemPrices.clear();
         }
       }
     } catch (e) {
@@ -129,5 +139,43 @@ class MenuDataController extends GetxController {
       throw Exception(e);
     }
     isLoadingCartItem.value = false;
+  }
+
+  void incrementQuantity(int index) {
+    if (index >= 0 && index < itemQuantities.length) {
+      itemQuantities[index]++;
+      updateItemPrice(index);
+      updateTotalPrice();
+      itemQuantities.refresh();  
+    } else {
+      print("Invalid index for incrementQuantity: $index");
+    }
+  }
+
+  void decrementQuantity(int index) {
+    if (index >= 0 && index < itemQuantities.length) {
+      if (itemQuantities[index] > 1) {
+        itemQuantities[index]--;
+        updateItemPrice(index);
+        updateTotalPrice();
+        itemQuantities.refresh(); 
+      }
+    } else {
+      print("Invalid index for decrementQuantity: $index");
+    }
+  }
+
+  void updateItemPrice(int index) {
+    if (index >= 0 && index < itemQuantities.length) {
+      itemPrices[index] = fetchCartItemList[index]['price'] * itemQuantities[index];
+    }
+  }
+
+  void updateTotalPrice() {
+    double total = 0.0;
+    for (var item in fetchCartItemList) {
+      total += item['price'] * item['quantity'];
+    }
+    totalPrice.value = total;
   }
 }

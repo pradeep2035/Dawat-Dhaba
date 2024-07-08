@@ -27,9 +27,6 @@ class MobileVerificationController extends GetxController {
         phoneNumber: "+91$phone",
         timeout: const Duration(seconds: 60),
         verificationCompleted: (phoneAuthCredential) {
-          print("complete $phoneAuthCredential");
-          print("=================+++++++++++++++++");
-          print(phone);
           // showSnackBar(context, "user successfully verified");
         },
         verificationFailed: (authException) {

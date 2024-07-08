@@ -173,9 +173,9 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
               ),
             ),
             Divider(
-              height: screenHeight*0.05, // Specify the height of the divider
-              thickness: 1.5, // Specify the thickness of the divider
-              color: Colors.grey.shade400, // Specify the color of the divider
+              height: screenHeight*0.05, 
+              thickness: 1.5, 
+              color: Colors.grey.shade400,
             ),
             Align(
               alignment: AlignmentDirectional.centerStart,
