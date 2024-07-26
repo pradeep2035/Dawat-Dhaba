@@ -12,6 +12,12 @@ class MenuDataController extends GetxController {
   var itemQuantities = <int>[].obs;
   var itemPrices = <int>[].obs;
   var totalPrice = 0.0.obs;
+  @override
+  void onInit() {
+    super.onInit();
+    // Fetch cart items when the controller initializes
+    fetchCartItem();
+  }
 
   fetchSpecialMenu() async {
     try {
@@ -92,12 +98,13 @@ class MenuDataController extends GetxController {
   }
 
   //========================================================================= ADD TO CART ITEMS
-  addToCartItem(String itemId, int itemQuantity) async {
+  addToCartItem(String itemId, int itemQuantity, int price) async {
     try {
       final response = await dio.post(apiValue.addToCart, data: {
         "Customer_id": SharedPreferencesHelper.getcustomerId(),
         "item_Id": itemId,
-        "quantity": itemQuantity
+        "quantity": itemQuantity,
+        "price": price
       });
       if (response.statusCode == 200) {
         print("successfully added to cart");
@@ -123,10 +130,12 @@ class MenuDataController extends GetxController {
         final data = response.data;
         if (data != null && data["status_code"] == 200) {
           List responseData = data['data'];
-          itemQuantities.value =fetchCartItemList.map((item) => item['quantity'] as int).toList();
-          itemPrices.value =fetchCartItemList.map((item) => item['price'] as int).toList();
-          updateTotalPrice();
           fetchCartItemList.value = responseData;
+          itemQuantities.value =
+              fetchCartItemList.map((item) => item['quantity'] as int).toList();
+          itemPrices.value =
+              fetchCartItemList.map((item) => item['price'] as int).toList();
+          updateTotalPrice();
           print("CART ITEM FETCHED SUCCESSFULLY");
         } else {
           fetchCartItemList.clear();
@@ -141,24 +150,24 @@ class MenuDataController extends GetxController {
     isLoadingCartItem.value = false;
   }
 
-  void incrementQuantity(int index) {
+  void incrementQuantity(int index) async {
     if (index >= 0 && index < itemQuantities.length) {
       itemQuantities[index]++;
       updateItemPrice(index);
       updateTotalPrice();
-      itemQuantities.refresh();  
+      itemQuantities.refresh();
     } else {
       print("Invalid index for incrementQuantity: $index");
     }
   }
 
-  void decrementQuantity(int index) {
+  void decrementQuantity(int index) async {
     if (index >= 0 && index < itemQuantities.length) {
       if (itemQuantities[index] > 1) {
         itemQuantities[index]--;
         updateItemPrice(index);
         updateTotalPrice();
-        itemQuantities.refresh(); 
+        itemQuantities.refresh();
       }
     } else {
       print("Invalid index for decrementQuantity: $index");
@@ -167,7 +176,9 @@ class MenuDataController extends GetxController {
 
   void updateItemPrice(int index) {
     if (index >= 0 && index < itemQuantities.length) {
-      itemPrices[index] = fetchCartItemList[index]['price'] * itemQuantities[index];
+      itemPrices[index] =
+          fetchCartItemList[index]['price'] * itemQuantities[index];
+      itemPrices.refresh();
     }
   }
 
@@ -177,5 +188,30 @@ class MenuDataController extends GetxController {
       total += item['price'] * item['quantity'];
     }
     totalPrice.value = total;
+  }
+
+  deleteItemCart(String itemId, int index) async {
+    try {
+      final response =
+          await dio.delete(apiValue.removeCartItem, data: {"id": itemId});
+      if (response.statusCode == 200) {
+        print("removed from cart");
+        fetchCartItemList.removeAt(index);
+        itemQuantities.removeAt(index);
+        itemPrices.removeAt(index);
+        updateTotalPrice();
+      } else {
+        print("not removed");
+      }
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  void clearCart() {
+    fetchCartItemList.clear();
+    itemQuantities.clear();
+    itemPrices.clear();
+    totalPrice.value = 0.0;
   }
 }

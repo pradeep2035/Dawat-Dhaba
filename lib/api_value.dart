@@ -13,6 +13,8 @@ class ApiValue{
   //========================================================Food cart
   String addToCart='${url[isBeta]}customer/addItem';
   String fetchCartItem='${url[isBeta]}customer/cart';
+  String updateQuntityCartItem='${url[isBeta]}customer/quantityChangeInCart';
+  String removeCartItem='${url[isBeta]}customer/removeItem';
 
 }
 ApiValue apiValue = ApiValue();

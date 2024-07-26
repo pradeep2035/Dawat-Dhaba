@@ -190,7 +190,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
           ],
         ),
       ),
-     bottomSheet: BottomSheetWidget(itemId: widget.itemId),
+     bottomSheet: BottomSheetWidget(itemId: widget.itemId,itemPrice:widget.itemPrice),
     );
   }
 }

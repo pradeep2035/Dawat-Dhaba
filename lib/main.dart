@@ -5,12 +5,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await  SharedPreferencesHelper.init();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform
-  );
+  await SharedPreferencesHelper.init();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }
 
@@ -23,7 +21,7 @@ class MyApp extends StatelessWidget {
     return const GetMaterialApp(
       title: 'Dawat Dhaba',
       debugShowCheckedModeBanner: false,
-      home:SwipeController(),
+      home: SwipeController(),
     );
   }
 }

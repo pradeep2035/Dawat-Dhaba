@@ -7,8 +7,10 @@ import 'package:get/get.dart';
 
 class BottomSheetWidget extends StatefulWidget {
   final String itemId;
+  final String itemPrice;
+  
 
-  const BottomSheetWidget({super.key, required this.itemId});
+  const BottomSheetWidget({super.key, required this.itemId, required this.itemPrice});
 
   @override
   _BottomSheetWidgetState createState() => _BottomSheetWidgetState();
@@ -93,7 +95,7 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
           InkWell(
             onTap: ()async{
              if (authController.user.value != null) {
-                 await addItemCntrl.addToCartItem(widget.itemId, _quantity);
+                 await addItemCntrl.addToCartItem(widget.itemId, _quantity,(_quantity*int.parse(widget.itemPrice)));
                   Get.to(() => CartPage()); 
                 } else {
                   Get.to(() => MobileVerification()); 

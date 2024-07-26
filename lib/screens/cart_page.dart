@@ -1,4 +1,5 @@
 import 'package:dawat_dhaba/controllers/menu_controller.dart';
+import 'package:dawat_dhaba/controllers/payment_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,6 +13,7 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   final MenuDataController cartItemCntrl = Get.put(MenuDataController());
+  final PaymentController paymentController = Get.put(PaymentController());
 
   @override
   void initState() {
@@ -85,6 +87,7 @@ class _CartPageState extends State<CartPage> {
                       itemCount: cartItemCntrl.fetchCartItemList.length,
                       itemBuilder: (context, index) {
                         final cartItem = cartItemCntrl.fetchCartItemList[index];
+                        final item_Id = cartItemCntrl.fetchCartItemList[index]['_id'];
                         return Container(
                           height: screenHeight * 0.1,
                           width: screenWidth * 0.9,
@@ -139,11 +142,6 @@ class _CartPageState extends State<CartPage> {
                                             SizedBox(
                                               height: screenHeight * 0.005,
                                             ),
-                                            // Text(
-                                            //     " ₹ ${(cartItem['price'] * cartItem['quantity']).toString()}",
-                                            //     style: const TextStyle(
-                                            //         fontWeight: FontWeight.w500,
-                                            //         fontSize: 15)),
                                             Obx(()=>Text(" ₹ ${cartItemCntrl.itemPrices[index].toString()}",
                                                 style: const TextStyle(
                                                     fontWeight: FontWeight.w500,
@@ -157,45 +155,57 @@ class _CartPageState extends State<CartPage> {
                                 ),
                                 Expanded(
                                     flex: 3,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
+                                    child: Column(
                                       children: [
-                                        InkWell(
-                                          onTap: () {
-                                            cartItemCntrl
-                                                .decrementQuantity(index);
-                                          },
-                                          child: Container(
-                                            height: screenHeight * 0.03,
-                                            width: screenWidth * 0.07,
-                                            decoration: BoxDecoration(
-                                            color: Colors.orange.shade100,
-                                            borderRadius: BorderRadius.circular(8)
+                                        const SizedBox(height: 5,),
+                                         Align(
+                                          alignment: Alignment.topRight,
+                                          child: InkWell(
+                                            onTap: () async{
+                                             await cartItemCntrl.deleteItemCart(item_Id,index);
+                                            },
+                                            child: Icon(Icons.cancel,color:Colors.grey.shade500,))),
+                                          SizedBox(height: screenHeight*0.02,),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
+                                          children: [
+                                            InkWell(
+                                              onTap: () {
+                                                cartItemCntrl
+                                                    .decrementQuantity(index);
+                                              },
+                                              child: Container(
+                                                height: screenHeight * 0.03,
+                                                width: screenWidth * 0.07,
+                                                decoration: BoxDecoration(
+                                                color: Colors.orange.shade100,
+                                                borderRadius: BorderRadius.circular(8)
+                                                ),
+                                                child: const Center(child: Icon(Icons.remove,color: Colors.white,)),
+                                              ),
                                             ),
-                                            child: const Center(child: Icon(Icons.remove,color: Colors.white,)),
-                                          ),
-                                        ),
-                                        Obx(() => Text(
-                                              cartItemCntrl
-                                                  .itemQuantities[index]
-                                                  .toString(),
-                                              style: const TextStyle(fontSize: 14),
-                                            )),
-                                        InkWell(
-                                          onTap: () {
-                                            cartItemCntrl
-                                                .incrementQuantity(index);
-                                          },
-                                          child: Container(
-                                            height: screenHeight * 0.03,
-                                            width: screenWidth * 0.07,
-                                            decoration: BoxDecoration(
-                                            color: Colors.orange.shade400,
-                                            borderRadius: BorderRadius.circular(8)
+                                            Obx(() => Text(
+                                                  cartItemCntrl
+                                                      .itemQuantities[index]
+                                                      .toString(),
+                                                  style: const TextStyle(fontSize: 14),
+                                                )),
+                                            InkWell(
+                                              onTap: () {
+                                                 cartItemCntrl.incrementQuantity(index);
+                                              },
+                                              child: Container(
+                                                height: screenHeight * 0.03,
+                                                width: screenWidth * 0.07,
+                                                decoration: BoxDecoration(
+                                                color: Colors.orange.shade400,
+                                                borderRadius: BorderRadius.circular(8)
+                                                ),
+                                                child: const Center(child: Icon(Icons.add,color: Colors.white,)),
+                                              ),
                                             ),
-                                            child: const Center(child: Icon(Icons.add,color: Colors.white,)),
-                                          ),
+                                          ],
                                         ),
                                       ],
                                     ))
@@ -301,11 +311,10 @@ class _CartPageState extends State<CartPage> {
                     width: screenWidth * 0.65,
                     child: ElevatedButton(
                       onPressed: () {
-                        // Place your order action
+                        cartItemCntrl.updateTotalPrice();
+                        paymentController.makePayment(cartItemCntrl.totalPrice.value);
                       },
                       style: ElevatedButton.styleFrom(
-                        // primary: Colors.white,
-                        // onPrimary: Colors.red,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
